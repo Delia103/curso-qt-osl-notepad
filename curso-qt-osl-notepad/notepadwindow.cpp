@@ -11,7 +11,6 @@ NotepadWindow::NotepadWindow(QWidget *parent)
 
     //Inicializamos los menús
     mainMenu_ = new QMenuBar(this);
-
     mnuArchivo_ = new QMenu(tr("&Archivo"), this);
     mainMenu_->addMenu(mnuArchivo_);
 
@@ -23,8 +22,14 @@ NotepadWindow::NotepadWindow(QWidget *parent)
     actArchivoGuardar_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_S));
     mnuArchivo_->addAction(actArchivoGuardar_);
 
+    actArchivoSalir_= new QAction(tr("&Salir"), this);
+    mnuArchivo_->addAction(actArchivoSalir_);
+
     mnuEditar_ = new QMenu(tr("&Editar"), this);
     mainMenu_->addMenu(mnuEditar_);
+
+    actEditarCortar_ = new QAction(tr("&Cortar"), this);
+    mnuEditar_->addAction(actEditarCortar_);
 
     actEditarCopiar_ = new QAction(tr("&Copiar"), this);
     actEditarCopiar_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_C));
@@ -34,14 +39,37 @@ NotepadWindow::NotepadWindow(QWidget *parent)
     actEditarPegar_->setShortcut(QKeySequence(Qt::CTRL + Qt::Key_V));
     mnuEditar_->addAction(actEditarPegar_);
 
+    actEditarDeshacer_ = new QAction(tr("&Deshacer"), this);
+    mnuEditar_->addAction(actEditarDeshacer_);
+
+    actEditarRehacer_ = new QAction(tr("&Rehacer"), this);
+    mnuEditar_->addAction(actEditarRehacer_);
+
     mnuFormato_ = new QMenu(tr("&Formato"), this);
     mainMenu_->addMenu(mnuFormato_);
 
     actFormatoFuente_ = new QAction(tr("&Fuente"), this);
     mnuFormato_->addAction(actFormatoFuente_);
 
+    mnuHelp_ = new QMenu(tr("&Help"), this);
+    mainMenu_->addMenu(mnuHelp_);
+
+    actHelpAbout_ = new QAction(tr("&About"), this);
+    mnuHelp_->addAction(actHelpAbout_);
+
+
+
     //Agregamos la barra de menú a la ventana
     this->setMenuBar(mainMenu_);
+
+    toolbar_ = new QToolBar(this);
+    toolbar_->addAction(actArchivoAbrir_);
+    toolbar_->addAction(actArchivoGuardar_);
+    toolbar_->addAction(actEditarDeshacer_);
+    toolbar_->addAction(actEditarRehacer_);
+
+
+    addToolBar(toolbar_);
 
     //Inicializamos el editor de texto
     txtEditor_ = new QPlainTextEdit(this);
@@ -51,7 +79,14 @@ NotepadWindow::NotepadWindow(QWidget *parent)
     connect(actArchivoGuardar_, SIGNAL(triggered()), this,          SLOT(alGuardar()));
     connect(actEditarCopiar_,   SIGNAL(triggered()), txtEditor_,    SLOT(copy()));
     connect(actEditarPegar_,    SIGNAL(triggered()), txtEditor_,    SLOT(paste()));
+    connect(actEditarCortar_,    SIGNAL(triggered()), txtEditor_,    SLOT(cut()));
+    connect(actEditarDeshacer_,    SIGNAL(triggered()), txtEditor_,    SLOT(undo()));
+    connect(actEditarRehacer_,    SIGNAL(triggered()), txtEditor_,    SLOT(redo()));
     connect(actFormatoFuente_,  SIGNAL(triggered()), this,          SLOT(alFuente()));
+    connect(actArchivoSalir_, SIGNAL(triggered()), this,          SLOT(alSalir()));
+    connect(actHelpAbout_, SIGNAL(triggered()), this,          SLOT(alAbout()));
+
+
 
     //Agregamos el editor de texto a la ventana
     this->setCentralWidget(txtEditor_);
@@ -123,3 +158,19 @@ void NotepadWindow::alFuente()
         txtEditor_->setFont(font);
     }
 }
+
+
+
+void NotepadWindow::alSalir()
+{
+    close();
+}
+
+void NotepadWindow::alAbout()
+{
+    QMessageBox msgBox;
+    msgBox.setText("hola soy editor.");
+    msgBox.exec();
+}
+
+
